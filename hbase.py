@@ -18,7 +18,7 @@ class HBaseTable:
             amount_rows += 1
         return information, amount_rows
 
-    def size_data(self) -> int:
+    def amount_rows(self) -> int:
         return len(self.data)
 
     def to_string(self) -> str:
@@ -71,6 +71,16 @@ class HBaseDatabase:
     def scan_table(self, table_name: str):
         table = self.tables[table_name]
         return table.table_scanned()
+    
+    def amount_rows_table(self, table_name: str):
+        return self.tables[table_name].amount_rows()
+    
+    def truncating_table(self, table_name: str):
+        self.tables[table_name].enabled = False
+        self.tables[table_name].data = {}
+    
+    def list_all_tables(self):
+        return "\n".join(self.tables.keys()), len(self.tables.keys())
 
     def get_tables(self) -> str: # ! Esto estara solo para ver como se actualizan las tablas
         information = ""
