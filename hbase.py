@@ -98,20 +98,20 @@ class HBaseDatabase:
     def disable_table(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables[table_name].enabled = False
-            return "La tabla se deshabilito correctamente"
+            return True
         return "ERROR: --> La tabla no existe"
     
     def enable_table(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables[table_name].enabled = True
-            return "La tabla se habilito correctamente"
+            return True
         return "ERROR: --> La tabla no existe"
     
     def is_enabled(self, table_name: str) -> bool:
         if table_name in self.tables:
             if self.tables[table_name].enabled == True:
-                return "La tabla se encuentra habilitada"
+                return True
             else:
-                return "La tabla se encuentra deshabilitada"
+                return False
         return "ERROR: --> La tabla no existe"
     

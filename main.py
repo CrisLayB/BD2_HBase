@@ -160,17 +160,31 @@ def hbase_command(consult : str) -> str:
     if (command == 'disable'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
-        hbase_database.disable_table(consult[1])
+        enable = hbase_database.disable_table(consult[1])
+        if enable:
+            return "La tabla se deshabilito correctamente"
+        else:
+            return "ERROR al deshabilitar la tabla"
+        
     
     if (command == 'enable'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
-        hbase_database.enable_table(consult[1])
+        enable = hbase_database.enable_table(consult[1])
+        if enable:
+            return "La tabla se habilito correctamente"
+        else:
+            return "ERROR al habilitar la tabla"
+
 
     if (command == 'is_enabled'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
-        hbase_database.is_enabled(consult[1])
+        enabled = hbase_database.is_enabled(consult[1])
+        if enabled:
+            return "=> true"
+        else:
+            return "=> false"
     
     return "=> ERROR: Nothing detected"
     
