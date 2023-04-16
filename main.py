@@ -19,6 +19,7 @@ from hbase import * # Importar clases para controlar las tablas
 
 # Importar otro tipo de librerias
 import os
+import re
 
 hbase_database = HBaseDatabase() # Iniciar clase hbase donde se guardaran las tablas
 
@@ -45,6 +46,13 @@ def main():
         # ! Detectar si el string esta vacio
         if(terminal_consult.isspace()):
             print("\nThe inserted command is empty\n")
+            continue
+
+        # ! Comando de help para entender mejor el funcionamiento del programa
+        if(terminal_consult == 'help'):
+            print("\nCOMMAND [create] EXAMPLE:\ncreate employees personal_data professional_data\n")
+            print("COMMAND [put] EXAMPLE:\nput employees Geoffrey personal_data:pet bird\n")
+            print("COMMAND [scan] EXAMPLE:\nscan employees\n")
             continue
 
         # ! Limpiar la pantalla 
@@ -77,7 +85,6 @@ def main():
 def hbase_command(consult : str) -> str:
     print(consult) # ! Para fines de "DEBUG"
     command = consult[0]
-
     # ==> Para crear una nueva tabla
     if(command == 'create'):
         # Verificar si cumple con el minimo de columnas (que seria como minimo 1)    
@@ -85,7 +92,7 @@ def hbase_command(consult : str) -> str:
             return "ERROR: You dont have define minimun a column for the new table"
         
         # Verificar que no tenga el mismo nombre de otras tablas existentes
-        if(hbase_database.find_duplicate_table(consult[1])):
+        if(hbase_database.find_existing_table(consult[1])):
             return f"ERROR: Table {consult[1]} is done allready exist"
         
         # Si todo esta en orden entonces se creara la nueva tabla
@@ -94,14 +101,33 @@ def hbase_command(consult : str) -> str:
         return f"=> HBase::Table - {consult[1]}" 
 
     # ==> Para actualizar y/o agregar datos una tabla existente
-
+    if(command == 'put'):
+        # Verificar que la consulta tenga 5 argumentos
+        if len(consult) != 5:
+            error_information = f"ERROR: Argument count not valid, the correct is:"
+            error_information += "\nput name_table key_row column:field value"
+            return error_information
+        
+        # Verificar si la tabla ingresada es valida
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"
+        # Verificar que la columna y el campo tenga ":"
+        if not re.search(':', consult[3]):
+            return f"ERROR: ':' was not founded"
+        # Ingresar los datos deseados
+        if(consult[4].isnumeric()): consult[4] = int(consult[4])
+        hbase_database.put_data_on_table(consult[1], consult[2], consult[3], consult[4])
+        return "0 rows(s) in 0 seconds\n"
 
     # ==> Consultar datos de la tabla
     if(command == 'scan'):
-        
-        return f" row(s) in 0.0 seconds"
+        # Verificar si la tabla ingresada es valida
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"    
+        information, rows = hbase_database.scan_table(consult[1])
+        return "\n".join(information) + f"\n{rows} row(s) in 0.0 seconds"
     
-    return ""
+    return "=> ERROR: Nothing detected"
 
 def initial_set():
     hbase_table = HBaseTable("employees", ["personal_data", "professional_data"])

@@ -5,6 +5,19 @@ class HBaseTable:
         self.enabled = True
         self.data = {}
 
+    def table_scanned(self) -> list:
+        information = ["ROW\t\t\t\t\t\t\tCOLUMN+CELL"]
+        amount_rows = 0
+        for key, value in self.data.items():
+            for column in self.columns:
+                if column in value: # Si dado caso la columna existe en value entonces se podra escanear
+                    for col_key, col_val in value[column].items():
+                        information.append(
+                            f"{key}\t\t\t\t\t\t\tcolumn={column}:{col_key}, value={col_val}"
+                        )
+            amount_rows += 1
+        return information, amount_rows
+
     def size_data(self) -> int:
         return len(self.data)
 
@@ -17,15 +30,14 @@ class HBaseTable:
 
 class HBaseDatabase:
     def __init__(self) -> None:
-        self.tables = []
+        self.tables = {}
 
     def add_table(self, table : HBaseTable) -> None:
-        # Verificar que no exista una tabla con el mismo nombre
-        self.tables.append(table) # Si todo esta en orden se procede a guardarlo
+        self.tables[table.name] = table
 
     def put_data_on_table(self, table_name : str, row_key : str, column_and_field : str, value) -> str:
-        for table in self.tables:            
-            if table.name == table_name: # Accedimos dentro de la tabla
+        for name, table in self.tables.items():
+            if name == table_name: # Accedimos dentro de la tabla
                 # Vamos a verificar si la columna si es valida
                 column_information = column_and_field.split(":")
 
@@ -45,24 +57,23 @@ class HBaseDatabase:
                         column_information[0] : {
                             column_information[1] : value
                         },
-                        "timestamp": "1591649830",
-                        "value":"Val_" + str(table.size_data()+1)
                     }
                     table.data[row_key] = data
                     
                     return "yes"
 
                 return "ERROR: --> Column inserted doesnt exist"
-
         return "ERROR: --> Table doen't exists"
-
-    def find_duplicate_table(self, table_name: str) -> bool:
-        for table in self.tables:
-            if table.name == table_name: return True
-        return False
+    
+    def find_existing_table(self, table_name: str) -> bool:
+        return table_name in self.tables
+    
+    def scan_table(self, table_name: str):
+        table = self.tables[table_name]
+        return table.table_scanned()
 
     def get_tables(self) -> str: # ! Esto estara solo para ver como se actualizan las tablas
         information = ""
-        for table in self.tables:
+        for table in self.tables.values():
             information += table.to_string();
         return information
