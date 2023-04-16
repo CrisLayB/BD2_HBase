@@ -1,34 +1,3 @@
-# class Table:
-#     def __init__(self) -> None:
-#         self.name = "employees"
-#         self.columns = ["personal_data", "professional_data"]
-#         self.enabled = True
-#         self.data = [
-#             "Geoffrey", {
-#                 "personal_data":{
-#                     "age":32,
-#                 },
-#                 "professional_data":{
-#                     "department":"sales",
-#                     "salary":42000
-#                 },
-#                 "timestamp": "1591649830",
-#                 "value":"Val_1"
-#             },
-#             "Peter", {
-#                 "personal_data":{
-#                     "age":43,
-#                     "pet":"dog"
-#                 },
-#                 "professional_data":{
-#                     "department":"sales",
-#                     "salary":34000
-#                 },
-#                 "timestamp": "1591649830",
-#                 "value":"Val_2"
-#             },
-#         ]
-
 class HBaseTable:
     def __init__(self, name : str, columns : list) -> None:
         self.name = name
@@ -62,6 +31,15 @@ class HBaseDatabase:
 
                 # Si la columna existe entonces podremos agregar o actualizar la informacion 
                 if column_information[0] in table.columns:
+                    if row_key in table.data: # Si existe entonces se acutalizara la informacion
+                        # Si se creara un filed nuevo en la columna si dado caso no existe jeje
+                        if column_information[0] not in table.data[row_key]:
+                            table.data[row_key][column_information[0]] = {column_information[1] : value}
+                            return "update field"
+                        # O si no en su defecto se creara una nueva field para la columna
+                        table.data[row_key][column_information[0]][column_information[1]] = value
+                        return "update"
+                                            
                     # Si no existe la row_key eso quiere decir que se creara
                     data = {
                         column_information[0] : {
@@ -74,9 +52,14 @@ class HBaseDatabase:
                     
                     return "yes"
 
-                return "--> Column inserted doesnt exist"
+                return "ERROR: --> Column inserted doesnt exist"
 
-        return "--> Table doen't exists"
+        return "ERROR: --> Table doen't exists"
+
+    def find_duplicate_table(self, table_name: str) -> bool:
+        for table in self.tables:
+            if table.name == table_name: return True
+        return False
 
     def get_tables(self) -> str: # ! Esto estara solo para ver como se actualizan las tablas
         information = ""
