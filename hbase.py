@@ -1,3 +1,5 @@
+import time
+
 class HBaseTable:
     def __init__(self, name : str, columns : list) -> None:
         self.name = name
@@ -13,7 +15,7 @@ class HBaseTable:
                 if column in value: # Si dado caso la columna existe en value entonces se podra escanear
                     for col_key, col_val in value[column].items():
                         information.append(
-                            f"{key}\t\t\t\t\t\t\tcolumn={column}:{col_key}, value={col_val}"
+                            f"{key}\t\t\t\t\t\t\tcolumn={column}:{col_key}, timestamp={col_val[1]}, value={col_val[0]}"
                         )
             amount_rows += 1
         return information, amount_rows
@@ -46,16 +48,16 @@ class HBaseDatabase:
                     if row_key in table.data: # Si existe entonces se acutalizara la informacion
                         # Si se creara un filed nuevo en la columna si dado caso no existe jeje
                         if column_information[0] not in table.data[row_key]:
-                            table.data[row_key][column_information[0]] = {column_information[1] : value}
+                            table.data[row_key][column_information[0]] = {column_information[1] : [value, int(time.time())]}
                             return "update field"
                         # O si no en su defecto se creara una nueva field para la columna
-                        table.data[row_key][column_information[0]][column_information[1]] = value
+                        table.data[row_key][column_information[0]][column_information[1]] = [value, int(time.time())]
                         return "update"
                                             
                     # Si no existe la row_key eso quiere decir que se creara
                     data = {
                         column_information[0] : {
-                            column_information[1] : value
+                            column_information[1] : [value, int(time.time())]
                         },
                     }
                     table.data[row_key] = data
