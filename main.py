@@ -54,6 +54,13 @@ def main():
             print("COMMAND [put] EXAMPLE:\nput employees Geoffrey personal_data:pet bird\n")
             print("COMMAND [scan] EXAMPLE:\nscan employees\n")
             print("COMMAND [count] EXAMPLE:\ncount employees\n")
+            print("COMMAND [get] EXAMPLE:\nget employees\n")
+            print("COMMAND [get] EXAMPLE:\nget employees Geoffrey\n")
+            print("COMMAND [drop] EXAMPLE:\ndrop employees\n")
+            print("COMMAND [drop_all] EXAMPLE:\ndrop_all\n")
+            print("COMMAND [disable] EXAMPLE:\ndisable employees\n")
+            print("COMMAND [enable] EXAMPLE:\nenable employees\n")
+            print("COMMAND [is_enabled] EXAMPLE:\nis_enabled employees\n")
             continue
 
         # ! Limpiar la pantalla 
@@ -161,8 +168,60 @@ def hbase_command(consult : str) -> str:
     if(command == 'list'):
         tables, count = hbase_database.list_all_tables()
         return f"{tables}\n{count} row(s) in 0.0 seconds"
+
+    if(command == 'get'):
+        if len(consult) <= 1:
+            return "ERROR: Not enough arguments"
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"
+        if len(consult) == 2:
+            table = hbase_database.get_table_not_row(consult[1])
+            return table
+        elif len(consult) == 3:
+            table = hbase_database.get_table(consult[1], consult[2])
+            return table
+    
+    if (command == 'drop_all'):
+        if len(consult) >= 1:
+            return "ERROR: Too many arguments"
+        hbase_database.drop_all_tables()
+        
+    if (command == 'drop'):
+        if len(consult) <= 1:
+            return "ERROR: Not enough arguments"
+        hbase_database.drop_table(consult[1])
+
+    if (command == 'disable'):
+        if len(consult) <= 1:
+            return "ERROR: Not enough arguments"
+        enable = hbase_database.disable_table(consult[1])
+        if enable:
+            return "La tabla se deshabilito correctamente"
+        else:
+            return "ERROR al deshabilitar la tabla"
+        
+    
+    if (command == 'enable'):
+        if len(consult) <= 1:
+            return "ERROR: Not enough arguments"
+        enable = hbase_database.enable_table(consult[1])
+        if enable:
+            return "La tabla se habilito correctamente"
+        else:
+            return "ERROR al habilitar la tabla"
+
+
+    if (command == 'is_enabled'):
+        if len(consult) <= 1:
+            return "ERROR: Not enough arguments"
+        enabled = hbase_database.is_enabled(consult[1])
+        if enabled:
+            return "=> true"
+        else:
+            return "=> false"
     
     return "=> ERROR: Nothing detected"
+    
 
 def initial_set():
     hbase_table = HBaseTable("employees", ["personal_data", "professional_data"])
