@@ -20,6 +20,17 @@ class HBaseTable:
             amount_rows += 1
         return information, amount_rows
 
+    def table_data_row(self, row: str) -> list:
+        if row in self.data:        
+            information = ["COLUMN\t\t\t\t\t\t\tCELL"]
+            for key, value in self.data[row].items():
+                for key2, value2 in value.items():
+                    information.append(
+                        f"{key}:{key2}\t\t\t\t\t\t\ttimestamp={value2[1]}, value=P{value2[0]}"
+                    )
+            return information
+        return None
+
     def amount_rows(self) -> int:
         return len(self.data)
 
@@ -102,9 +113,8 @@ class HBaseDatabase:
         self.tables = {}
         return True
     
-    def get_table(self, table_name: str, row_name: str) -> HBaseTable:
-        
-        return f"{self.tables[table_name].data[row_name]}"
+    def get_table(self, table_name: str, row_name: str) -> HBaseTable:        
+        return self.tables[table_name].table_data_row(row_name)
     
     def get_table_not_row(self, table_name: str) -> HBaseTable:
         return f"{self.tables[table_name].to_string()}"
@@ -124,9 +134,10 @@ class HBaseDatabase:
     
     def is_enabled(self, table_name: str) -> bool:
         if table_name in self.tables:
-            if self.tables[table_name].enabled == True:
-                return True
-            else:
-                return False
+            return self.tables[table_name].enabled
+            # if self.tables[table_name].enabled == True:
+            #     return True
+            # else:
+            #     return False
         return "ERROR: --> La tabla no existe"
     
