@@ -20,6 +20,7 @@ from hbase import * # Importar clases para controlar las tablas
 # Importar otro tipo de librerias
 import os
 import re
+import json
 
 hbase_database = HBaseDatabase() # Iniciar clase hbase donde se guardaran las tablas
 
@@ -32,7 +33,7 @@ def main():
     hbase_commands = [
         "create", "describe", "alter", "put", "scan", "get", 
         "list", "disable", "is_enabled", "drop", "drop_all",
-        "delete", "delete_all", "count", "truncate"
+        "delete", "delete_all", "count", "truncate", "enable"
     ]
     
     finish = False
@@ -178,20 +179,33 @@ def hbase_command(consult : str) -> str:
             return f"ERROR: Table doesn't exist"
         if len(consult) == 2:
             table = hbase_database.get_table_not_row(consult[1])
-            return table
+            table_str = json.dumps(table, indent=2, separators=(',', ': '))
+            table_str = re.sub(r'[{}\"\']', '', table_str)
+            return table_str
         elif len(consult) == 3:
             table = hbase_database.get_table(consult[1], consult[2])
-            return table
+            table_str = json.dumps(table, indent=2, separators=(',', ': '))
+            table_str = re.sub(r'[{}\"\']', '', table_str)
+            return table_str
     
     if (command == 'drop_all'):
-        if len(consult) >= 1:
+        if len(consult) >= 2:
             return "ERROR: Too many arguments"
-        hbase_database.drop_all_tables()
+        drop1 = hbase_database.drop_all_tables()
+        if drop1:
+            return "Todas las tablas se eliminaron correctamente"
+        else:
+            return "ERROR al eliminar las tablas"
         
     if (command == 'drop'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
-        hbase_database.drop_table(consult[1])
+        drop1 = hbase_database.drop_table(consult[1])
+        if drop1:
+            return "La tabla se elimino correctamente"
+        else:
+            return "ERROR al eliminar la tabla"
+        
 
     if (command == 'disable'):
         if len(consult) <= 1:
@@ -218,9 +232,9 @@ def hbase_command(consult : str) -> str:
             return "ERROR: Not enough arguments"
         enabled = hbase_database.is_enabled(consult[1])
         if enabled:
-            return "=> true"
+            return "True"
         else:
-            return "=> false"
+            return "False"
     
     return "=> ERROR: Nothing detected"
     

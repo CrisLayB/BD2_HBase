@@ -95,31 +95,32 @@ class HBaseDatabase:
     def drop_table(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables.pop(table_name)
-            return "La tabla se elimino correctamente"
+            return True
         return "ERROR: --> La tabla no existe"
     
     def drop_all_tables(self) -> str:
         self.tables = {}
-        return "Se eliminaron todas las tablas"
+        return True
     
     def get_table(self, table_name: str, row_name: str) -> HBaseTable:
-        return self.tables[table_name].data[row_name]
+        
+        return f"{self.tables[table_name].data[row_name]}"
     
     def get_table_not_row(self, table_name: str) -> HBaseTable:
-        return self.tables[table_name].to_string()
+        return f"{self.tables[table_name].to_string()}"
     
     
     def disable_table(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables[table_name].enabled = False
             return True
-        return "ERROR: --> La tabla no existe"
+        return False
     
     def enable_table(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables[table_name].enabled = True
             return True
-        return "ERROR: --> La tabla no existe"
+        return False
     
     def is_enabled(self, table_name: str) -> bool:
         if table_name in self.tables:
