@@ -54,6 +54,8 @@ def main():
             print("COMMAND [put] EXAMPLE:\nput employees Geoffrey personal_data:pet bird\n")
             print("COMMAND [scan] EXAMPLE:\nscan employees\n")
             print("COMMAND [count] EXAMPLE:\ncount employees\n")
+            print("COMMAND [truncate] EXAMPLE:\ntruncate employees\n")
+            print("COMMAND [list] EXAMPLE:\nlist\n")
             print("COMMAND [get] EXAMPLE:\nget employees\n")
             print("COMMAND [get] EXAMPLE:\nget employees Geoffrey\n")
             print("COMMAND [drop] EXAMPLE:\ndrop employees\n")
@@ -249,5 +251,5 @@ def initial_set():
     hbase_database.put_data_on_table("employees", "Sara", "professional_data:salary", 49000)
 
 # Ejecutar programa principal
-if __name__ == "__main__":
+if __name__ == "__main__":    
     main()
