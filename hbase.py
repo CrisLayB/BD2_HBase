@@ -49,9 +49,11 @@ class HBaseDatabase:
                         # Si se creara un filed nuevo en la columna si dado caso no existe jeje
                         if column_information[0] not in table.data[row_key]:
                             table.data[row_key][column_information[0]] = {column_information[1] : [value, int(time.time())]}
+                            table.data = dict(sorted(table.data.items(), reverse=False))
                             return "update field"
                         # O si no en su defecto se creara una nueva field para la columna
                         table.data[row_key][column_information[0]][column_information[1]] = [value, int(time.time())]
+                        table.data = dict(sorted(table.data.items(), reverse=False))
                         return "update"
                                             
                     # Si no existe la row_key eso quiere decir que se creara
@@ -61,7 +63,7 @@ class HBaseDatabase:
                         },
                     }
                     table.data[row_key] = data
-                    
+                    table.data = dict(sorted(table.data.items(), reverse=False))
                     return "yes"
 
                 return "ERROR: --> Column inserted doesnt exist"

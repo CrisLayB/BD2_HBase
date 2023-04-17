@@ -231,24 +231,24 @@ def initial_set():
     hbase_database.add_table(hbase_table) # Agregar tabla a la database
 
     # --> Actualizar tabla de set de datos inicial
-    # ! Vamos a implementar a Geoffrey
-    hbase_database.put_data_on_table("employees", "Geoffrey", "personal_data:age", 32)
-    hbase_database.put_data_on_table("employees", "Geoffrey", "professional_data:department", "sales")
-    hbase_database.put_data_on_table("employees", "Geoffrey", "professional_data:salary", 42000)
-    # ! Vamos a implementar a Petter
-    hbase_database.put_data_on_table("employees", "Petter", "personal_data:age", 43)
-    hbase_database.put_data_on_table("employees", "Petter", "personal_data:pet", "dog")
-    hbase_database.put_data_on_table("employees", "Petter", "professional_data:department", "sales")
-    hbase_database.put_data_on_table("employees", "Petter", "professional_data:salary", 34000)
-    # ! Vamos a implementar a Joseph
-    hbase_database.put_data_on_table("employees", "Joseph", "personal_data:age", 24)
-    hbase_database.put_data_on_table("employees", "Joseph", "professional_data:department", "dev")
-    hbase_database.put_data_on_table("employees", "Joseph", "professional_data:salary", 54000)
     # ! Vamos a implementar a Sara
     hbase_database.put_data_on_table("employees", "Sara", "personal_data:age", 29)
     hbase_database.put_data_on_table("employees", "Sara", "personal_data:pet", "cat")
     hbase_database.put_data_on_table("employees", "Sara", "professional_data:department", "hr")
     hbase_database.put_data_on_table("employees", "Sara", "professional_data:salary", 49000)
+    # ! Vamos a implementar a Joseph
+    hbase_database.put_data_on_table("employees", "Joseph", "personal_data:age", 24)
+    hbase_database.put_data_on_table("employees", "Joseph", "professional_data:department", "dev")
+    hbase_database.put_data_on_table("employees", "Joseph", "professional_data:salary", 54000)
+    # ! Vamos a implementar a Petter
+    hbase_database.put_data_on_table("employees", "Petter", "personal_data:age", 43)
+    hbase_database.put_data_on_table("employees", "Petter", "personal_data:pet", "dog")
+    hbase_database.put_data_on_table("employees", "Petter", "professional_data:department", "sales")
+    hbase_database.put_data_on_table("employees", "Petter", "professional_data:salary", 34000)
+    # ! Vamos a implementar a Geoffrey
+    hbase_database.put_data_on_table("employees", "Geoffrey", "personal_data:age", 32)
+    hbase_database.put_data_on_table("employees", "Geoffrey", "professional_data:department", "sales")
+    hbase_database.put_data_on_table("employees", "Geoffrey", "professional_data:salary", 42000)
 
 # Ejecutar programa principal
 if __name__ == "__main__":    
