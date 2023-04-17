@@ -32,7 +32,7 @@ def main():
     hbase_commands = [
         "create", "describe", "alter", "put", "scan", "get", 
         "list", "disable", "is_enabled", "drop", "drop_all",
-        "delete", "delete_all", "count", "truncate"
+        "delete", "delete_all", "count", "truncate", "enable"
     ]
     
     finish = False
@@ -150,12 +150,21 @@ def hbase_command(consult : str) -> str:
     if (command == 'drop_all'):
         if len(consult) >= 1:
             return "ERROR: Too many arguments"
-        hbase_database.drop_all_tables()
+        drop1 = hbase_database.drop_all_tables()
+        if drop1:
+            return "Todas las tablas se eliminaron correctamente"
+        else:
+            return "ERROR al eliminar las tablas"
         
     if (command == 'drop'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
-        hbase_database.drop_table(consult[1])
+        drop1 = hbase_database.drop_table(consult[1])
+        if drop1:
+            return "La tabla se elimino correctamente"
+        else:
+            return "ERROR al eliminar la tabla"
+        
 
     if (command == 'disable'):
         if len(consult) <= 1:
