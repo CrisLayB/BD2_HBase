@@ -57,7 +57,6 @@ def main():
             print("COMMAND [count] EXAMPLE:\ncount employees\n")
             print("COMMAND [truncate] EXAMPLE:\ntruncate employees\n")
             print("COMMAND [list] EXAMPLE:\nlist\n")
-            print("COMMAND [get] EXAMPLE:\nget employees\n")
             print("COMMAND [get] EXAMPLE:\nget employees Geoffrey\n")
             print("COMMAND [drop] EXAMPLE:\ndrop employees\n")
             print("COMMAND [drop_all] EXAMPLE:\ndrop_all\n")
@@ -122,6 +121,11 @@ def hbase_command(consult : str) -> str:
         # Verificar si la tabla ingresada es valida
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
+
+        # Verificar que la tabla este habilitada
+        if not hbase_database.is_enabled(consult[1]):
+            return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
+        
         # Verificar que la columna y el campo tenga ":"
         if not re.search(':', consult[3]):
             return f"ERROR: ':' was not founded"
@@ -135,6 +139,11 @@ def hbase_command(consult : str) -> str:
         # Verificar si la tabla ingresada es valida
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"    
+        
+        # Verificar que la tabla este habilitada
+        if not hbase_database.is_enabled(consult[1]):
+            return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
+        
         information, rows = hbase_database.scan_table(consult[1])
         return "\n".join(information) + f"\n{rows} row(s) in 0.0 seconds"
     
@@ -145,6 +154,10 @@ def hbase_command(consult : str) -> str:
         
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"    
+
+        # Verificar que la tabla este habilitada
+        if not hbase_database.is_enabled(consult[1]):
+            return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
         
         count = hbase_database.amount_rows_table(consult[1])
         return f"{count} row(s) in 0.0 seconds\n\n=> {count}"
@@ -175,18 +188,21 @@ def hbase_command(consult : str) -> str:
     if(command == 'get'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
+        
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
+        
+        # Verificar que la tabla este habilitada
+        if not hbase_database.is_enabled(consult[1]):
+            return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
+        
         if len(consult) == 2:
-            table = hbase_database.get_table_not_row(consult[1])
-            table_str = json.dumps(table, indent=2, separators=(',', ': '))
-            table_str = re.sub(r'[{}\"\']', '', table_str)
-            return table_str
+            return f"ERROR: Wrong number of arguments: get '{consult[1]}' requires at least one argument, got 0"
+        
         elif len(consult) == 3:
             table = hbase_database.get_table(consult[1], consult[2])
-            table_str = json.dumps(table, indent=2, separators=(',', ': '))
-            table_str = re.sub(r'[{}\"\']', '', table_str)
-            return table_str
+            if table == None: return "ERROR: Invalid row"
+            return "\n".join(table)
     
     if (command == 'drop_all'):
         if len(consult) >= 2:
