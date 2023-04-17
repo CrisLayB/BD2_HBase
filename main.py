@@ -53,6 +53,7 @@ def main():
             print("\nCOMMAND [create] EXAMPLE:\ncreate employees personal_data professional_data\n")
             print("COMMAND [put] EXAMPLE:\nput employees Geoffrey personal_data:pet bird\n")
             print("COMMAND [scan] EXAMPLE:\nscan employees\n")
+            print("COMMAND [count] EXAMPLE:\ncount employees\n")
             print("COMMAND [get] EXAMPLE:\nget employees\n")
             print("COMMAND [get] EXAMPLE:\nget employees Geoffrey\n")
             print("COMMAND [drop] EXAMPLE:\ndrop employees\n")
@@ -60,7 +61,6 @@ def main():
             print("COMMAND [disable] EXAMPLE:\ndisable employees\n")
             print("COMMAND [enable] EXAMPLE:\nenable employees\n")
             print("COMMAND [is_enabled] EXAMPLE:\nis_enabled employees\n")
-            
             continue
 
         # ! Limpiar la pantalla 
@@ -135,6 +135,40 @@ def hbase_command(consult : str) -> str:
         information, rows = hbase_database.scan_table(consult[1])
         return "\n".join(information) + f"\n{rows} row(s) in 0.0 seconds"
     
+    # ==> Hacer cuenta de filas en la tabla solicitada
+    if(command == 'count'):
+        if len(consult) <= 1: # Para determinar si faltan argumentos
+            return "ERROR: Missing name of the table to count"
+        
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"    
+        
+        count = hbase_database.amount_rows_table(consult[1])
+        return f"{count} row(s) in 0.0 seconds\n\n=> {count}"
+
+    # ==> Para deshabilitar la tabla y eliminar todo su contenido
+    if(command == 'truncate'):
+        if len(consult) <= 1: # Para determinar si faltan argumentos
+            return "ERROR: Missing name of the table to count"
+        
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"
+        
+        # Realizar las acciones para desabilitar tabla y eliminar su contenido
+        hbase_database.truncating_table(consult[1])
+
+        # Mostrar la informacion
+        information = f"Truncating {consult[1]} table (it may take a while)"
+        information += "\nDisabling table..."
+        information += "\nTruncating table..."
+        information += "\n0 row(s) in 0.0 seconds"
+        return information
+
+    # ==> Para mostrar todas las tablas presentes
+    if(command == 'list'):
+        tables, count = hbase_database.list_all_tables()
+        return f"{tables}\n{count} row(s) in 0.0 seconds"
+
     if(command == 'get'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
