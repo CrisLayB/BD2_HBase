@@ -148,7 +148,7 @@ def hbase_command(consult : str) -> str:
             return table
     
     if (command == 'drop_all'):
-        if len(consult) >= 1:
+        if len(consult) >= 2:
             return "ERROR: Too many arguments"
         drop1 = hbase_database.drop_all_tables()
         if drop1:
