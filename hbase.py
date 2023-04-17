@@ -81,12 +81,12 @@ class HBaseDatabase:
     def drop_table(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables.pop(table_name)
-            return "La tabla se elimino correctamente"
+            return True
         return "ERROR: --> La tabla no existe"
     
     def drop_all_tables(self) -> str:
         self.tables = {}
-        return "Se eliminaron todas las tablas"
+        return True
     
     def get_table(self, table_name: str, row_name: str) -> HBaseTable:
         return self.tables[table_name].data[row_name]
