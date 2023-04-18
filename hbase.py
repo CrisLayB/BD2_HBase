@@ -189,11 +189,11 @@ class HBaseDatabase:
         if table_name in self.tables:
             self.tables[table_name].delete_all()
     
-    def describe(self, table_name: str, row_name: str) -> str:
+    def describe(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables[table_name].describe()
     
-    def alter(self, table_name: str, row_name: str) -> str:
+    def alter(self, table_name: str) -> str:
         if table_name in self.tables:
             self.tables[table_name].alter()
     

@@ -225,7 +225,15 @@ def hbase_command(consult : str) -> str:
             return "La tabla se habilito correctamente"
         else:
             return "ERROR al habilitar la tabla"
-
+    # Consultar datos de la tabla
+    if (command == 'describe'):
+        if len(consult) <= 2:
+            return "ERROR: Not enough arguments"
+        describe1 = hbase_database.describe(consult[1])
+        if describe1:
+            return "Descripción de la tabla"
+        else:
+            return "ERROR al describir la tabla"
 
     if (command == 'is_enabled'):
         if len(consult) <= 1:
@@ -236,8 +244,46 @@ def hbase_command(consult : str) -> str:
         else:
             return "False"
     
+    # Eliminar datos de la tabla
+    if (command == 'delete'):
+        if len(consult) <= 4:
+            return "ERROR: Not enough arguments"
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"
+        delete1 = hbase_database.delete(consult[1])
+        if delete1:
+            return "Ha sido eliminado"
+        else:
+            return "ERROR al eliminar el dato"
+
+    # Elimnar todos los datos de la tabla
+    if (command == 'deleteall'):
+        if len(consult) <= 3:
+            return "ERROR: Not enough arguments"
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"
+        delete_all1 = hbase_database.delete_all(consult[1])
+        if delete_all1:
+            return "La columna ha sido eliminada"
+        else:
+            return "ERROR al eliminar el dato"
+
+    # Alterar datos de la tabla
+    if (command == 'alter'):
+        if len(consult) <= 3:
+            return "ERROR: Not enough arguments"
+        if not hbase_database.find_existing_table(consult[1]):
+            return f"ERROR: Table doesn't exist"
+        alter1 = hbase_database.alter(consult[1])
+        if alter1:
+            return "La tabla ha sido modificada"
+        else:
+            return "ERROR al modificar la tabla"
+
     return "=> ERROR: Nothing detected"
+
     
+        
 
 def initial_set():
     hbase_table = HBaseTable("employees", ["personal_data", "professional_data"])
