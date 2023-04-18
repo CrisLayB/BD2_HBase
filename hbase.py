@@ -181,11 +181,19 @@ class HBaseDatabase:
                 return False
         return "ERROR: --> La tabla no existe"
 
-
+    def delete(self, table_name: str) -> str:
+        if table_name in self.tables:
+            self.tables[table_name].delete()
+    
+    def delete_all(self, table_name: str) -> str:
+        if table_name in self.tables:
+            self.tables[table_name].delete_all()
     
     def describe(self, table_name: str, row_name: str) -> str:
-        return 0
+        if table_name in self.tables:
+            self.tables[table_name].describe()
     
     def alter(self, table_name: str, row_name: str) -> str:
-        return 0
+        if table_name in self.tables:
+            self.tables[table_name].alter()
     
