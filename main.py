@@ -193,18 +193,18 @@ def hbase_command(consult : str) -> str:
             return "ERROR: Too many arguments"
         drop1 = hbase_database.drop_all_tables()
         if drop1:
-            return "Todas las tablas se eliminaron correctamente"
+            return "All tables has been deleted successfully"
         else:
-            return "ERROR al eliminar las tablas"
+            return "ERROR tables couldn't be deleted"
         
     if (command == 'drop'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
         drop1 = hbase_database.drop_table(consult[1])
         if drop1:
-            return "La tabla se elimino correctamente"
+            return "The table has been deleted successfully"
         else:
-            return "ERROR al eliminar la tabla"
+            return "ERROR table couldn't be deleted"
         
 
     if (command == 'disable'):
@@ -212,9 +212,9 @@ def hbase_command(consult : str) -> str:
             return "ERROR: Not enough arguments"
         enable = hbase_database.disable_table(consult[1])
         if enable:
-            return "La tabla se deshabilito correctamente"
+            return "The table has been disabled successfully"
         else:
-            return "ERROR al deshabilitar la tabla"
+            return "ERROR table couldn't be disabled"
         
     
     if (command == 'enable'):
@@ -222,18 +222,18 @@ def hbase_command(consult : str) -> str:
             return "ERROR: Not enough arguments"
         enable = hbase_database.enable_table(consult[1])
         if enable:
-            return "La tabla se habilito correctamente"
+            return "The table has been enabled successfully"
         else:
-            return "ERROR al habilitar la tabla"
+            return "ERROR table couldn't be enabled"
     # Consultar datos de la tabla
     if (command == 'describe'):
         if len(consult) <= 2:
             return "ERROR: Not enough arguments"
         describe1 = hbase_database.describe(consult[1])
         if describe1:
-            return "Descripción de la tabla"
+            return "Table descripted"
         else:
-            return "ERROR al describir la tabla"
+            return "ERROR table couldn't be descripted"
 
     if (command == 'is_enabled'):
         if len(consult) <= 1:
@@ -252,9 +252,9 @@ def hbase_command(consult : str) -> str:
             return f"ERROR: Table doesn't exist"
         delete1 = hbase_database.delete(consult[1])
         if delete1:
-            return "Ha sido eliminado"
+            return "The data has been deleted"
         else:
-            return "ERROR al eliminar el dato"
+            return "ERROR data couln't be deleted"
 
     # Elimnar todos los datos de la tabla
     if (command == 'deleteall'):
@@ -264,9 +264,9 @@ def hbase_command(consult : str) -> str:
             return f"ERROR: Table doesn't exist"
         delete_all1 = hbase_database.delete_all(consult[1])
         if delete_all1:
-            return "La columna ha sido eliminada"
+            return "The data has been deleted"
         else:
-            return "ERROR al eliminar el dato"
+            return "ERROR the data could not be deleted"
 
     # Alterar datos de la tabla
     if (command == 'alter'):
@@ -276,9 +276,9 @@ def hbase_command(consult : str) -> str:
             return f"ERROR: Table doesn't exist"
         alter1 = hbase_database.alter(consult[1])
         if alter1:
-            return "La tabla ha sido modificada"
+            return "The table has been modified"
         else:
-            return "ERROR al modificar la tabla"
+            return "ERROR the table could not be modified"
 
     return "=> ERROR: Nothing detected"
 
