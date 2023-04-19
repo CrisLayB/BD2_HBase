@@ -64,10 +64,10 @@ def main():
             print("COMMAND [disable] EXAMPLE:\ndisable employees\n")
             print("COMMAND [enable] EXAMPLE:\nenable employees\n")
             print("COMMAND [is_enabled] EXAMPLE:\nis_enabled employees\n")
-            print("COMMAND [delete] EXAMPLE:\ndelete 'mytable', 'row1', 'cf1:col1'\n")
-            print("COMMAND [delete_all] EXAMPLE:\ndelete_all 'mytable', 'row1'\n")
+            print("COMMAND [delete] EXAMPLE:\ndelete mytable row1 cf1:col1\n")
+            print("COMMAND [delete_all] EXAMPLE:\ndelete_all mytable row1\n")
             print("COMMAND [describe] EXAMPLE:\ndescribe employees\n")
-            print("COMMAND [alter] EXAMPLE:\nalter 'mytable', {NAME => 'new_cf'}\n")
+            print("COMMAND [alter] EXAMPLE:\nalter mytable, {NAME => 'new_cf'}\n")
             continue
 
         # ! Limpiar la pantalla 
