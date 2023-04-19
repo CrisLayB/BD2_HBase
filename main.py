@@ -250,7 +250,7 @@ def hbase_command(consult : str) -> str:
     
     # Eliminar datos de la tabla
     if (command == 'delete'):
-        if len(consult) <= 4:
+        if len(consult) <= 2:
             return "ERROR: Not enough arguments"
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
@@ -262,7 +262,7 @@ def hbase_command(consult : str) -> str:
 
     # Elimnar todos los datos de la tabla
     if (command == 'deleteall'):
-        if len(consult) <= 3:
+        if len(consult) <= 1:
             return "ERROR: Not enough arguments"
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
@@ -274,7 +274,7 @@ def hbase_command(consult : str) -> str:
 
     # Alterar datos de la tabla
     if (command == 'alter'):
-        if len(consult) <= 3:
+        if len(consult) <= 2:
             return "ERROR: Not enough arguments"
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"

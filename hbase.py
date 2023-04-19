@@ -43,6 +43,8 @@ class HBaseTable:
             return f"Deleted row {row_name}, column {column}, timestamp {timestamp}."
         else:
             return f"Row {row_name} or column {column} does not exist."
+   
+
 
     def delete_all(self) -> str:
         self.data.clear()
