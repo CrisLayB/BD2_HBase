@@ -41,6 +41,59 @@ class HBaseTable:
         information += f"\nData: {self.data}"
         return information
 
+
+    def delete(self, row_name: str, column: str, timestamp: int = None) -> str:
+        if row_name in self.data and column in self.columns:
+            if timestamp is None:
+                del self.data[row_name][column]
+            else:
+                if timestamp in self.data[row_name][column]:
+                    del self.data[row_name][column][timestamp]
+                else:
+                    return f"Timestamp {timestamp} does not exist for row {row_name} and column {column}."
+            return f"Deleted row {row_name}, column {column}, timestamp {timestamp}."
+        else:
+            return f"Row {row_name} or column {column} does not exist."
+   
+
+
+    def delete_all(self) -> str:
+        self.data.clear()
+        return "Deleted all rows."
+    
+
+    def describe(self) -> str:
+        result = f"Table name: {self.name}\n"
+        result += f"Enabled: {self.enabled}\n"
+        result += "Columns:\n"
+        for column in self.columns:
+            result += f"\t{column}\n"
+        result += f"Number of rows: {len(self.data)}\n"
+        if self.data:
+            result += "Sample data:\n"
+            for i, (row_name, row_data) in enumerate(self.data.items()):
+                if i >= 3:
+                    break
+                result += f"\tRow name: {row_name}\n"
+                for col, data in row_data.items():
+                    latest_val = data[max(data.keys())][0]
+                    result += f"\t\t{col}: {latest_val}\n"
+        else:
+            result += "No data in table\n"
+        return result
+    
+    def alter(self, new_columns: list) -> None:
+        for column in new_columns:
+            if column not in self.columns:
+                self.columns.append(column)
+                for row in self.data.values():
+                    row[column] = {}
+        for column in self.columns:
+            if column not in new_columns:
+                self.columns.remove(column)
+                for row in self.data.values():
+                    row.pop(column, None)
+
 class HBaseDatabase:
     def __init__(self) -> None:
         self.tables = {}
@@ -140,4 +193,35 @@ class HBaseDatabase:
             # else:
             #     return False
         return "ERROR: --> La tabla no existe"
+
+    
+    def delete(self, table_name: str, row_name: str, column: str, timestamp: int = None) -> str:
+        if table_name in self.tables:
+            table = self.tables[table_name]
+            return table.delete(row_name, column, timestamp)
+        else:
+            return f"Table {table_name} does not exist."
+
+    def delete_all(self, table_name: str) -> str:
+        if table_name in self.tables:
+            table = self.tables[table_name].delete_all()
+            return table
+        else:
+            return f"Table {table_name} does not exist."
+    
+    def describe(self, table_name: str) -> str:
+        if table_name in self.tables:
+            table = self.tables[table_name].describe()
+            return table
+        else:
+            return f"Table {table_name} does not exist."
+    
+
+
+    def alter(self, table_name: str, new_columns: list) -> str:
+        if table_name not in self.tables:
+            return f"Table {table_name} does not exist."
+        table = self.tables[table_name]
+        table.alter(new_columns)
+        return f"Table {table_name} has been altered. New columns: {table.columns}"
     
