@@ -181,19 +181,34 @@ class HBaseDatabase:
                 return False
         return "ERROR: --> La tabla no existe"
 
-    def delete(self, table_name: str) -> str:
-        if table_name in self.tables:
-            self.tables[table_name].delete()
     
+    def delete(self, table_name: str, row_name: str, column: str, timestamp: int = None) -> str:
+        if table_name in self.tables:
+            table = self.tables[table_name]
+            return table.delete(row_name, column, timestamp)
+        else:
+            return f"Table {table_name} does not exist."
+
     def delete_all(self, table_name: str) -> str:
         if table_name in self.tables:
-            self.tables[table_name].delete_all()
+            table = self.tables[table_name].delete_all()
+            return table
+        else:
+            return f"Table {table_name} does not exist."
     
     def describe(self, table_name: str) -> str:
         if table_name in self.tables:
-            self.tables[table_name].describe()
+            table = self.tables[table_name].describe()
+            return table
+        else:
+            return f"Table {table_name} does not exist."
     
-    def alter(self, table_name: str) -> str:
-        if table_name in self.tables:
-            self.tables[table_name].alter()
+
+
+    def alter(self, table_name: str, new_columns: list) -> str:
+        if table_name not in self.tables:
+            return f"Table {table_name} does not exist."
+        table = self.tables[table_name]
+        table.alter(new_columns)
+        return f"Table {table_name} has been altered. New columns: {table.columns}"
     
