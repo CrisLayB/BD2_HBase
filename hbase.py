@@ -20,17 +20,6 @@ class HBaseTable:
             amount_rows += 1
         return information, amount_rows
 
-    def table_data_row(self, row: str) -> list:
-        if row in self.data:        
-            information = ["COLUMN\t\t\t\t\t\t\tCELL"]
-            for key, value in self.data[row].items():
-                for key2, value2 in value.items():
-                    information.append(
-                        f"{key}:{key2}\t\t\t\t\t\t\ttimestamp={value2[1]}, value=P{value2[0]}"
-                    )
-            return information
-        return None
-
     def amount_rows(self) -> int:
         return len(self.data)
 
@@ -43,9 +32,10 @@ class HBaseTable:
 
 
     def delete(self, row_name: str, column: str, timestamp: int = None) -> str:
-        if row_name in self.data and column in self.columns:
+        column = column.split(":")
+        if row_name in self.data and column[0] in self.columns:
             if timestamp is None:
-                del self.data[row_name][column]
+                del self.data[row_name][column[0]][column[1]]
             else:
                 if timestamp in self.data[row_name][column]:
                     del self.data[row_name][column][timestamp]
@@ -55,13 +45,12 @@ class HBaseTable:
         else:
             return f"Row {row_name} or column {column} does not exist."
    
-
-
-    def delete_all(self) -> str:
-        self.data.clear()
-        return "Deleted all rows."
+    def delete_all(self, row_name : str) -> str:
+        if row_name in self.data:
+            del self.data[row_name]
+            return "Deleted all rows."
+        return "ERROR: ROW NAME not found"
     
-
     def describe(self) -> str:
         result = f"Table name: {self.name}\n"
         result += f"Enabled: {self.enabled}\n"
@@ -166,8 +155,9 @@ class HBaseDatabase:
         self.tables = {}
         return True
     
-    def get_table(self, table_name: str, row_name: str) -> HBaseTable:        
-        return self.tables[table_name].table_data_row(row_name)
+    def get_table(self, table_name: str, row_name: str) -> HBaseTable:
+        
+        return f"{self.tables[table_name].data[row_name]}"
     
     def get_table_not_row(self, table_name: str) -> HBaseTable:
         return f"{self.tables[table_name].to_string()}"
@@ -187,11 +177,10 @@ class HBaseDatabase:
     
     def is_enabled(self, table_name: str) -> bool:
         if table_name in self.tables:
-            return self.tables[table_name].enabled
-            # if self.tables[table_name].enabled == True:
-            #     return True
-            # else:
-            #     return False
+            if self.tables[table_name].enabled == True:
+                return True
+            else:
+                return False
         return "ERROR: --> La tabla no existe"
 
     
@@ -202,12 +191,12 @@ class HBaseDatabase:
         else:
             return f"Table {table_name} does not exist."
 
-    def delete_all(self, table_name: str) -> str:
+    def delete_all(self, table_name: str, row_name : str) -> str:
         if table_name in self.tables:
-            table = self.tables[table_name].delete_all()
+            table = self.tables[table_name].delete_all(row_name)
             return table
-        else:
-            return f"Table {table_name} does not exist."
+        
+        return f"Table {table_name} does not exist."
     
     def describe(self, table_name: str) -> str:
         if table_name in self.tables:

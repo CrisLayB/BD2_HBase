@@ -57,6 +57,7 @@ def main():
             print("COMMAND [count] EXAMPLE:\ncount employees\n")
             print("COMMAND [truncate] EXAMPLE:\ntruncate employees\n")
             print("COMMAND [list] EXAMPLE:\nlist\n")
+            print("COMMAND [get] EXAMPLE:\nget employees\n")
             print("COMMAND [get] EXAMPLE:\nget employees Geoffrey\n")
             print("COMMAND [drop] EXAMPLE:\ndrop employees\n")
             print("COMMAND [drop_all] EXAMPLE:\ndrop_all\n")
@@ -64,7 +65,7 @@ def main():
             print("COMMAND [enable] EXAMPLE:\nenable employees\n")
             print("COMMAND [is_enabled] EXAMPLE:\nis_enabled employees\n")
             print("COMMAND [delete] EXAMPLE:\ndelete mytable row1 cf1:col1\n")
-            print("COMMAND [delete_all] EXAMPLE:\ndelete_all mytable row1\n")
+            print("COMMAND [delete_all] EXAMPLE:\ndeleteall mytable row1\n")
             print("COMMAND [describe] EXAMPLE:\ndescribe employees\n")
             print("COMMAND [alter] EXAMPLE:\nalter mytable, {NAME => 'new_cf'}\n")
             continue
@@ -125,7 +126,7 @@ def hbase_command(consult : str) -> str:
         # Verificar si la tabla ingresada es valida
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
-
+        
         # Verificar que la tabla este habilitada
         if not hbase_database.is_enabled(consult[1]):
             return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
@@ -133,6 +134,7 @@ def hbase_command(consult : str) -> str:
         # Verificar que la columna y el campo tenga ":"
         if not re.search(':', consult[3]):
             return f"ERROR: ':' was not founded"
+        
         # Ingresar los datos deseados
         if(consult[4].isnumeric()): consult[4] = int(consult[4])
         hbase_database.put_data_on_table(consult[1], consult[2], consult[3], consult[4])
@@ -158,7 +160,7 @@ def hbase_command(consult : str) -> str:
         
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"    
-
+        
         # Verificar que la tabla este habilitada
         if not hbase_database.is_enabled(consult[1]):
             return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
@@ -173,7 +175,7 @@ def hbase_command(consult : str) -> str:
         
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
-        
+                        
         # Realizar las acciones para desabilitar tabla y eliminar su contenido
         hbase_database.truncating_table(consult[1])
 
@@ -201,12 +203,16 @@ def hbase_command(consult : str) -> str:
             return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
         
         if len(consult) == 2:
-            return f"ERROR: Wrong number of arguments: get '{consult[1]}' requires at least one argument, got 0"
+            table = hbase_database.get_table_not_row(consult[1])
+            table_str = json.dumps(table, indent=2, separators=(',', ': '))
+            table_str = re.sub(r'[{}\"\']', '', table_str)
+            return table_str
         
         elif len(consult) == 3:
             table = hbase_database.get_table(consult[1], consult[2])
-            if table == None: return "ERROR: Invalid row"
-            return "\n".join(table)
+            table_str = json.dumps(table, indent=2, separators=(',', ': '))
+            table_str = re.sub(r'[{}\"\']', '', table_str)
+            return table_str
     
     if (command == 'drop_all'):
         if len(consult) >= 2:
@@ -270,19 +276,33 @@ def hbase_command(consult : str) -> str:
             return "ERROR: Not enough arguments"
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
-        delete1 = hbase_database.delete(consult[1])
+        
+        # Verificar que la tabla este habilitada
+        if not hbase_database.is_enabled(consult[1]):
+            return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
+        
+        if not re.search(':', consult[3]):
+            return f"ERROR: ':' was not founded"
+        
+        delete1 = hbase_database.delete(consult[1], consult[2], consult[3])
         if delete1:
             return "The data has been deleted"
         else:
             return "ERROR data couln't be deleted"
 
     # Elimnar todos los datos de la tabla
-    if (command == 'deleteall'):
+    if (command == 'delete_all'):
         if len(consult) <= 1:
             return "ERROR: Not enough arguments"
+        
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
-        delete_all1 = hbase_database.delete_all(consult[1])
+        
+        # Verificar que la tabla este habilitada
+        if not hbase_database.is_enabled(consult[1]):
+            return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
+        
+        delete_all1 = hbase_database.delete_all(consult[1], consult[2])
         if delete_all1:
             return "The data has been deleted"
         else:
@@ -294,6 +314,11 @@ def hbase_command(consult : str) -> str:
             return "ERROR: Not enough arguments"
         if not hbase_database.find_existing_table(consult[1]):
             return f"ERROR: Table doesn't exist"
+        
+        # Verificar que la tabla este habilitada
+        if not hbase_database.is_enabled(consult[1]):
+            return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
+        
         alter1 = hbase_database.alter(consult[1])
         if alter1:
             return "The table has been modified"
@@ -301,10 +326,7 @@ def hbase_command(consult : str) -> str:
             return "ERROR the table could not be modified"
 
     return "=> ERROR: Nothing detected"
-
-    
-        
-
+      
 def initial_set():
     hbase_table = HBaseTable("employees", ["personal_data", "professional_data"])
 
