@@ -1,5 +1,5 @@
 import time
-
+#clase
 class HBaseTable:
     def __init__(self, name : str, columns : list) -> None:
         self.name = name
