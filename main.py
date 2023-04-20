@@ -65,9 +65,9 @@ def main():
             print("COMMAND [enable] EXAMPLE:\nenable employees\n")
             print("COMMAND [is_enabled] EXAMPLE:\nis_enabled employees\n")
             print("COMMAND [delete] EXAMPLE:\ndelete mytable row1 cf1:col1\n")
-            print("COMMAND [delete_all] EXAMPLE:\ndeleteall mytable row1\n")
+            print("COMMAND [delete_all] EXAMPLE:\ndelete_all mytable row1\n")
             print("COMMAND [describe] EXAMPLE:\ndescribe employees\n")
-            print("COMMAND [alter] EXAMPLE:\nalter mytable, {NAME => 'new_cf'}\n")
+            print("COMMAND [alter] EXAMPLE:\nalter employees new_column\n")
             continue
 
         # ! Limpiar la pantalla 
@@ -319,7 +319,7 @@ def hbase_command(consult : str) -> str:
         if not hbase_database.is_enabled(consult[1]):
             return f"ERROR: TableNotFoundException: {consult[1]} is disabled."
         
-        alter1 = hbase_database.alter(consult[1])
+        alter1 = hbase_database.alter(consult[1], consult[2])
         if alter1:
             return "The table has been modified"
         else:
@@ -351,6 +351,18 @@ def initial_set():
     hbase_database.put_data_on_table("employees", "Geoffrey", "personal_data:age", 32)
     hbase_database.put_data_on_table("employees", "Geoffrey", "professional_data:department", "sales")
     hbase_database.put_data_on_table("employees", "Geoffrey", "professional_data:salary", 42000)
+
+    # --> Implementar data random con muchos datos
+
+    hbase_table_random = HBaseTable("random_table", ["personal_data", "professional_data"])
+
+    hbase_database.add_table(hbase_table_random) # Agregar la tabla random
+
+    for i in range(1, 10000):
+        hbase_database.put_data_on_table("random_table", f"Person{i}", "personal_data:age",{i})
+        hbase_database.put_data_on_table("random_table", f"Person{i}", "personal_data:pet", "dog")
+        hbase_database.put_data_on_table("random_table", f"Person{i}", "professional_data:department", "sales")
+        hbase_database.put_data_on_table("random_table", f"Person{i}", "professional_data:salary", {i})
 
 # Ejecutar programa principal
 if __name__ == "__main__":    

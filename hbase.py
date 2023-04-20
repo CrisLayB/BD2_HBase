@@ -72,16 +72,8 @@ class HBaseTable:
         return result
     
     def alter(self, new_columns: list) -> None:
-        for column in new_columns:
-            if column not in self.columns:
-                self.columns.append(column)
-                for row in self.data.values():
-                    row[column] = {}
-        for column in self.columns:
-            if column not in new_columns:
-                self.columns.remove(column)
-                for row in self.data.values():
-                    row.pop(column, None)
+        if new_columns not in self.columns:
+            self.columns.append(new_columns)        
 
 class HBaseDatabase:
     def __init__(self) -> None:
